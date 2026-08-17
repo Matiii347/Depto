@@ -52,22 +52,12 @@ async function init() {
       console.log("Connected to target PostgreSQL database.");
     }
 
-    // Clean drop tables for clean seed update
-    console.log("Dropping existing tables for clean seed...");
-    await client.query(`
-      DROP TABLE IF EXISTS comentarios CASCADE;
-      DROP TABLE IF EXISTS reservas CASCADE;
-      DROP TABLE IF EXISTS fotos_propiedad CASCADE;
-      DROP TABLE IF EXISTS propiedades CASCADE;
-      DROP TABLE IF EXISTS usuarios_admin CASCADE;
-    `);
-
-    // Create Tables
-    console.log("Creating tables...");
+    // Create Tables safely if not exists
+    console.log("Ensuring database tables exist...");
 
     // 1. properties Table
     await client.query(`
-      CREATE TABLE propiedades (
+      CREATE TABLE IF NOT EXISTS propiedades (
         id SERIAL PRIMARY KEY,
         nombre VARCHAR(150) NOT NULL,
         descripcion TEXT,
@@ -83,7 +73,7 @@ async function init() {
 
     // 2. property photos Table
     await client.query(`
-      CREATE TABLE fotos_propiedad (
+      CREATE TABLE IF NOT EXISTS fotos_propiedad (
         id SERIAL PRIMARY KEY,
         propiedad_id INTEGER REFERENCES propiedades(id) ON DELETE CASCADE,
         url_imagen TEXT NOT NULL,
@@ -93,7 +83,7 @@ async function init() {
 
     // 3. reservations Table
     await client.query(`
-      CREATE TABLE reservas (
+      CREATE TABLE IF NOT EXISTS reservas (
         id SERIAL PRIMARY KEY,
         propiedad_id INTEGER REFERENCES propiedades(id) ON DELETE CASCADE,
         fecha_ingreso DATE NOT NULL,
@@ -109,7 +99,7 @@ async function init() {
 
     // 4. reviews Table
     await client.query(`
-      CREATE TABLE comentarios (
+      CREATE TABLE IF NOT EXISTS comentarios (
         id SERIAL PRIMARY KEY,
         reserva_id INTEGER REFERENCES reservas(id) ON DELETE CASCADE,
         token UUID NOT NULL UNIQUE,
@@ -123,7 +113,7 @@ async function init() {
 
     // 5. admin users Table
     await client.query(`
-      CREATE TABLE usuarios_admin (
+      CREATE TABLE IF NOT EXISTS usuarios_admin (
         id SERIAL PRIMARY KEY,
         nombre VARCHAR(100) NOT NULL,
         email VARCHAR(150) UNIQUE NOT NULL,
@@ -133,24 +123,27 @@ async function init() {
       );
     `);
 
-    console.log("All tables created successfully.");
+    console.log("All database tables verified successfully.");
 
-    // Seed Initial Property
-    console.log("Seeding real property data from Airbnb...");
-    const insertPropRes = await client.query(`
-      INSERT INTO propiedades (nombre, descripcion, ubicacion, capacidad_personas, precio_base_noche, tasa_limpieza, moneda, activo)
-      VALUES (
-        'Excelente apartamento a 250 m de la playa y a 400 m del centro',
-        'Excelente Apartamento ubicado a 250m de la playa y a 400m del centro de los Ingleses. Con 2 dormitorios con aire acondicionado (1 suite), baño social completo, cocina totalmente equipada, gran sala de estar con ventilador, TV inteligente y wifi. Sacada con barbacoa, zona de servicio con lavarropas, garaje cubierto privado, duchas externas y espacio para guardar sillas de playa. ¡Ideal para descansar en la comodidad y excelente ubicación! Incluye ropa de cama y toallas.',
-        'Rua das Gaivotas, Praia dos Ingleses, Florianópolis, Santa Catarina, Brasil',
-        5,
-        350.00,
-        150.00,
-        'R$',
-        true
-      ) RETURNING id;
-    `);
-    const propId = insertPropRes.rows[0].id;
+    // Check if properties table needs seed data
+    const propCheck = await client.query("SELECT id FROM propiedades LIMIT 1");
+
+    if (propCheck.rows.length === 0) {
+      console.log("Seeding real property data from Airbnb...");
+      const insertPropRes = await client.query(`
+        INSERT INTO propiedades (nombre, descripcion, ubicacion, capacidad_personas, precio_base_noche, tasa_limpieza, moneda, activo)
+        VALUES (
+          'Excelente apartamento a 250 m de la playa y a 400 m del centro',
+          'Excelente Apartamento ubicado a 250m de la playa y a 400m del centro de los Ingleses. Con 2 dormitorios con aire acondicionado (1 suite), baño social completo, cocina totalmente equipada, gran sala de estar con ventilador, TV inteligente y wifi. Sacada con barbacoa, zona de servicio con lavarropas, garaje cubierto privado, duchas externas y espacio para guardar sillas de playa. ¡Ideal para descansar en la comodidad y excelente ubicación! Incluye ropa de cama y toallas.',
+          'Rua das Gaivotas, Praia dos Ingleses, Florianópolis, Santa Catarina, Brasil',
+          5,
+          350.00,
+          150.00,
+          'R$',
+          true
+        ) RETURNING id;
+      `);
+      const propId = insertPropRes.rows[0].id;
 
     // Seed photos
     console.log("Seeding real property photos...");
@@ -202,11 +195,10 @@ async function init() {
           ('Administrador Local', 'admin.brasil@alquileres.com', $1, 'ADMIN_LOCAL');
       `, [hashedPass]);
       console.log("Admin users seeded successfully.");
+      console.log("Database initialization and seeding finished successfully!");
     } else {
-      console.log("Admin users already seeded.");
+      console.log("Database already contains property data. Skipping seed.");
     }
-
-    console.log("Database initialization finished successfully!");
 
   } catch (err) {
     console.error("Error during database initialization:", err);

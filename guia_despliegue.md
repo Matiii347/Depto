@@ -46,25 +46,27 @@ Esta guía paso a paso te explicará cómo desplegar la plataforma **Depto** (No
 
 Una vez que Render o Railway hayan creado la base de datos PostgreSQL:
 
-1. **Obtener la variable `DATABASE_URL`:**
-   En el panel de Render, ingresa a la base de datos creada (`depto-db`) y copia la **Internal Database URL** o **External Database URL**.
+1. **Obtener las URLs de la Base de Datos:**
+   En el panel de Render, ingresa a tu base de datos (`depto-db`) para ver ambas URLs:
+   - **Internal Database URL:** `postgresql://depto_user:nYARcjSHWO7uGC7aUrkOIMBzsXWyvCdb@dpg-da1k7go1ne8s73ck8u0g-a/deptos` (Se utiliza en el Web Service dentro de Render).
+   - **External Database URL:** `postgresql://depto_user:nYARcjSHWO7uGC7aUrkOIMBzsXWyvCdb@dpg-da1k7go1ne8s73ck8u0g-a.oregon-postgres.render.com/deptos` (Se utiliza para conectar desde tu computadora local).
 
-2. **Ejecutar el script de siembra (`init-db`):**
-   Puedes inicializar la base de datos de dos formas:
+2. **Ejecutar la siembra e inicialización de la Base de Datos (`init-db`):**
+   Puedes inicializar las tablas y fotos de dos formas:
 
-   - **Desde la consola de Render (Shell):**
-     En el panel del servicio web `depto-web`, ve a la pestaña **"Shell"** y ejecuta:
+   - **Opción A (Recomendada - Desde la consola de Render):**
+     En el panel de Render, ve a tu Web Service (`depto-web`), entra a la pestaña **"Shell"** y ejecuta:
      ```bash
      npm run init-db
      ```
 
-   - **O desde tu computadora local:**
-     En tu archivo `.env` local, coloca temporalmente la `DATABASE_URL` externa de la nube:
+   - **Opción B (Desde tu computadora local):**
+     En tu archivo `.env` local, coloca la `DATABASE_URL` externa:
      ```env
-     DATABASE_URL=postgres://usuario:password@host.render.com/Deptos
+     DATABASE_URL=postgresql://depto_user:nYARcjSHWO7uGC7aUrkOIMBzsXWyvCdb@dpg-da1k7go1ne8s73ck8u0g-a.oregon-postgres.render.com/deptos
      DB_SSL=true
      ```
-     Y ejecuta en tu terminal local:
+     Y ejecuta en tu terminal:
      ```bash
      npm run init-db
      ```
