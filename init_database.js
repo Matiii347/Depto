@@ -1,11 +1,10 @@
 const { Client } = require('pg');
 const crypto = require('crypto');
+require('dotenv').config();
 
 function hashPassword(password) {
   return crypto.createHash('sha256').update(password).digest('hex');
 }
-
-require('dotenv').config();
 
 const useDatabaseUrl = !!process.env.DATABASE_URL;
 
@@ -145,42 +144,44 @@ async function init() {
       `);
       const propId = insertPropRes.rows[0].id;
 
-    // Seed photos
-    console.log("Seeding real property photos...");
-    const photos = [
-      { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM.jpeg', main: true }, // Building Facade
-      { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (4).jpeg', main: false }, // Living/dining room
-      { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (6).jpeg', main: false }, // Master Bedroom
-      { url: '/img/WhatsApp Image 2026-07-29 at 9.28.10 PM (4).jpeg', main: false }, // Balcony with churrasqueira
-      { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (11).jpeg', main: false }, // Bunk beds bedroom
-      
-      // Rest of the 19 photos
-      { url: '/img/WhatsApp Image 2026-07-29 at 9.28.08 PM.jpeg', main: false }, // Beach chairs
-      { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (1).jpeg', main: false },
-      { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (2).jpeg', main: false },
-      { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (3).jpeg', main: false },
-      { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (5).jpeg', main: false },
-      { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (7).jpeg', main: false },
-      { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (8).jpeg', main: false },
-      { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (9).jpeg', main: false },
-      { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (10).jpeg', main: false },
-      { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (12).jpeg', main: false },
-      { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (13).jpeg', main: false },
-      { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (14).jpeg', main: false },
-      { url: '/img/WhatsApp Image 2026-07-29 at 9.28.10 PM.jpeg', main: false },
-      { url: '/img/WhatsApp Image 2026-07-29 at 9.28.10 PM (1).jpeg', main: false },
-      { url: '/img/WhatsApp Image 2026-07-29 at 9.28.10 PM (2).jpeg', main: false },
-      { url: '/img/WhatsApp Image 2026-07-29 at 9.28.10 PM (3).jpeg', main: false },
-      { url: '/img/WhatsApp Image 2026-07-29 at 9.28.11 PM.jpeg', main: false },
-      { url: '/img/WhatsApp Image 2026-07-29 at 9.28.11 PM (1).jpeg', main: false },
-      { url: '/img/WhatsApp Image 2026-07-29 at 9.28.11 PM (2).jpeg', main: false }
-    ];
+      // Seed photos
+      console.log("Seeding real property photos...");
+      const photos = [
+        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM.jpeg', main: true },
+        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (4).jpeg', main: false },
+        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (6).jpeg', main: false },
+        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.10 PM (4).jpeg', main: false },
+        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (11).jpeg', main: false },
+        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.08 PM.jpeg', main: false },
+        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (1).jpeg', main: false },
+        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (2).jpeg', main: false },
+        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (3).jpeg', main: false },
+        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (5).jpeg', main: false },
+        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (7).jpeg', main: false },
+        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (8).jpeg', main: false },
+        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (9).jpeg', main: false },
+        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (10).jpeg', main: false },
+        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (12).jpeg', main: false },
+        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (13).jpeg', main: false },
+        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (14).jpeg', main: false },
+        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.10 PM.jpeg', main: false },
+        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.10 PM (1).jpeg', main: false },
+        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.10 PM (2).jpeg', main: false },
+        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.10 PM (3).jpeg', main: false },
+        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.11 PM.jpeg', main: false },
+        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.11 PM (1).jpeg', main: false },
+        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.11 PM (2).jpeg', main: false }
+      ];
 
-    for (const photo of photos) {
-      await client.query(`
-        INSERT INTO fotos_propiedad (propiedad_id, url_imagen, es_principal)
-        VALUES ($1, $2, $3);
-      `, [propId, photo.url, photo.main]);
+      for (const photo of photos) {
+        await client.query(`
+          INSERT INTO fotos_propiedad (propiedad_id, url_imagen, es_principal)
+          VALUES ($1, $2, $3);
+        `, [propId, photo.url, photo.main]);
+      }
+      console.log("Property and photos seeded successfully.");
+    } else {
+      console.log("Database already contains property data. Skipping property seed.");
     }
 
     // Seed Admin Users if not already seeded
@@ -195,10 +196,11 @@ async function init() {
           ('Administrador Local', 'admin.brasil@alquileres.com', $1, 'ADMIN_LOCAL');
       `, [hashedPass]);
       console.log("Admin users seeded successfully.");
-      console.log("Database initialization and seeding finished successfully!");
     } else {
-      console.log("Database already contains property data. Skipping seed.");
+      console.log("Admin users already seeded.");
     }
+
+    console.log("Database initialization finished successfully!");
 
   } catch (err) {
     console.error("Error during database initialization:", err);
