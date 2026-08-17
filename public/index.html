@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Depto Ingleses - Alquiler Vacacional</title>
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- FontAwesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Flatpickr (Calendar library) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
+  <!-- Vanilla CSS Stylesheet -->
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="navbar-container">
+      <div class="logo">
+        <i class="fa-solid fa-umbrella-beach"></i>
+        <span>FloripaRent</span>
+      </div>
+      <nav class="nav-links">
+        <a href="#galeria">Galería</a>
+        <a href="#detalles">Detalles</a>
+        <a href="#ubicacion">Ubicación</a>
+        <a href="#resenas">Reseñas</a>
+        <a href="#contacto" class="btn-primary-sm">Reservar Ahora</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="main-container">
+
+    <!-- Title and Location -->
+    <section class="property-header">
+      <h1 id="prop-title" class="outfit-font">Depto Ingleses - Vista al Mar</h1>
+      <p class="location"><i class="fa-solid fa-location-dot"></i> <span id="prop-location">Praia dos Ingleses, Florianópolis, Brasil</span></p>
+    </section>
+
+    <!-- Gallery Section (Airbnb Style Grid) -->
+    <div class="gallery-container">
+      <section id="galeria" class="gallery-grid">
+        <div class="gallery-item main-img">
+          <img id="img-main" src="/img/WhatsApp Image 2026-07-29 at 9.28.08 PM.jpeg" alt="Vista Principal">
+        </div>
+        <div class="gallery-item side-img img1">
+          <img id="img-side1" src="" alt="Interior">
+        </div>
+        <div class="gallery-item side-img img2">
+          <img id="img-side2" src="" alt="Balcón">
+        </div>
+        <div class="gallery-item side-img img3">
+          <img id="img-side3" src="" alt="Cocina">
+        </div>
+        <div class="gallery-item side-img img4">
+          <img id="img-side4" src="" alt="Dormitorio">
+        </div>
+      </section>
+      <button id="btn-show-all-photos" class="btn-show-all">
+        <i class="fa-solid fa-images"></i> Mostrar todas las fotos (<span id="photos-total-count">0</span>)
+      </button>
+    </div>
+
+    <!-- Property Body Section (Two Column Layout) -->
+    <section id="detalles" class="details-section">
+      
+      <!-- Left Column: Info, Amenities, Reviews -->
+      <div class="info-column">
+        
+        <!-- Quick stats/Badges -->
+        <div class="quick-stats">
+          <div class="stat-badge"><i class="fa-solid fa-users"></i> Max 5 Huéspedes</div>
+          <div class="stat-badge"><i class="fa-solid fa-bed"></i> 2 Dormitorios</div>
+          <div class="stat-badge"><i class="fa-solid fa-umbrella-beach"></i> A 250m de la Playa</div>
+          <div class="stat-badge"><i class="fa-solid fa-square-parking"></i> Cochera Cubierta</div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- Description -->
+        <div class="description-box">
+          <h2 class="outfit-font">Acerca de este alojamiento</h2>
+          <p id="prop-description">Cargando descripción...</p>
+        </div>
+
+        <hr class="divider">
+
+        <!-- Amenities -->
+        <div class="amenities-box">
+          <h2 class="outfit-font">¿Qué ofrece este lugar?</h2>
+          <div class="amenities-grid">
+            <div class="amenity-item"><i class="fa-solid fa-kitchen-set"></i> Cocina</div>
+            <div class="amenity-item"><i class="fa-solid fa-wifi"></i> Wifi</div>
+            <div class="amenity-item"><i class="fa-solid fa-square-parking"></i> Estacionamiento gratuito en las instalaciones</div>
+            <div class="amenity-item"><i class="fa-solid fa-tv"></i> Televisión</div>
+            <div class="amenity-item"><i class="fa-solid fa-elevator"></i> Elevador</div>
+            <div class="amenity-item"><i class="fa-solid fa-soap"></i> Lavadora</div>
+            <div class="amenity-item"><i class="fa-solid fa-snowflake"></i> Aire acondicionado</div>
+            <div class="amenity-item"><i class="fa-solid fa-fire-burner"></i> Microondas</div>
+            <div class="amenity-item amenity-not-available"><i class="fa-solid fa-ban"></i> <del>Detector de humo</del></div>
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- Location (Maps) Section -->
+        <div id="ubicacion" class="location-box">
+          <h2 class="outfit-font">¿Dónde vas a hospedarte?</h2>
+          <a href="https://www.google.com/maps/place/Condom%C3%ADnio+Costa+do+Sol/@-27.4340413,-48.3940258,17z/data=!3m1!4b1!4m6!3m5!1s0x952769fe7a9377bb:0x566257f15f15416e!8m2!3d-27.4340413!4d-48.3940258!16s%2Fg%2F11cjj0vzsg!5m1!1e1?entry=ttu" target="_blank" class="location-subtitle">
+            <i class="fa-solid fa-location-dot"></i> Condomínio Costa do Sol - Rua das Gaivotas, Praia dos Ingleses, Florianópolis, Santa Catarina, Brasil
+          </a>
+          <div class="map-container">
+            <iframe 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3542.5694858348877!2d-48.3966007!3d-27.4340413!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x952769fe7a9377bb%3A0x566257f15f15416e!2sCondom%C3%ADnio%20Costa%20do%20Sol!5e0!3m2!1sen!2sus!4v1659100000000!5m2!1sen!2sus" 
+              width="100%" 
+              height="450" 
+              style="border:0;" 
+              allowfullscreen="" 
+              loading="lazy" 
+              referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- Reviews Section -->
+        <div id="resenas" class="reviews-box">
+          <div class="reviews-header">
+            <h2 class="outfit-font">Reseñas de Huéspedes <span id="reviews-avg">(★ 5.0)</span></h2>
+            <p id="reviews-count">0 comentarios</p>
+          </div>
+          
+          <div id="reviews-list" class="reviews-list">
+            <!-- Dynamic reviews loaded here -->
+            <p class="no-reviews">Aún no hay reseñas para este alojamiento.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Booking Card (Sticky) -->
+      <div id="contacto" class="booking-column">
+        <div class="booking-card">
+          <div class="booking-card-header">
+            <span class="price-title"><strong id="price-per-night">R$ 0</strong> / noche</span>
+            <span class="rating-badge"><i class="fa-solid fa-star"></i> 5.0</span>
+          </div>
+
+          <!-- Date Picker Box -->
+          <div class="booking-form">
+            <div class="form-group">
+              <label><i class="fa-solid fa-calendar-days"></i> Seleccionar Fechas</label>
+              <input type="text" id="datepicker" placeholder="Elegir fechas de estadía" readonly>
+            </div>
+
+            <!-- Price Breakdown (initially hidden) -->
+            <div id="price-breakdown" class="price-breakdown hidden">
+              <div class="breakdown-row">
+                <span id="nights-calc">R$ 350 x 5 noches</span>
+                <span id="subtotal-amount">R$ 1.750</span>
+              </div>
+              <div class="breakdown-row">
+                <span>Tasa de limpieza</span>
+                <span id="cleaning-amount">R$ 150</span>
+              </div>
+              <hr class="mini-divider">
+              <div class="breakdown-row total-row">
+                <span>Total estimado</span>
+                <span id="total-amount">R$ 1.900</span>
+              </div>
+            </div>
+
+            <!-- Guest Form -->
+            <div id="guest-form-section" class="guest-form-section">
+              <div class="form-group">
+                <label for="guest-name">Nombre Completo</label>
+                <input type="text" id="guest-name" placeholder="Ej. Juan Pérez">
+              </div>
+              <div class="form-group">
+                <label for="guest-contact">Celular de Contacto (con Whatsapp)</label>
+                <input type="tel" id="guest-contact" placeholder="Ej. +54 9 351 1234567">
+              </div>
+              <div class="form-group">
+                <label for="guest-country">País de Residencia (Método de Pago)</label>
+                <select id="guest-country">
+                  <option value="" disabled selected>Selecciona tu país...</option>
+                  <option value="AR">Argentina (Pago en Pesos/Dólares)</option>
+                  <option value="BR">Brasil (Pago vía PIX o Transferencia local)</option>
+                  <option value="OTRO">Otro país</option>
+                </select>
+              </div>
+            </div>
+
+            <button id="btn-submit-booking" class="btn-primary-lg" disabled>
+              <i class="fa-brands fa-whatsapp"></i> Solicitar Reserva por WhatsApp
+            </button>
+            <p class="card-footer-note">No se te cobrará nada todavía, coordinarás el pago con nosotros.</p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-container">
+      <p>&copy; 2026 FloripaRent. Todos los derechos reservados. Playa de Ingleses, Florianópolis.</p>
+      <p>Desarrollado para la gestión familiar directa. | <a href="/admin.html" class="admin-link">Acceso Propietario</a></p>
+    </div>
+  </footer>
+
+  <!-- All Photos Fullscreen Modal -->
+  <div id="all-photos-modal" class="all-photos-modal">
+    <div class="all-photos-header">
+      <button class="btn-close-all-photos" aria-label="Volver"><i class="fa-solid fa-chevron-left"></i> Volver</button>
+      <h2 class="outfit-font">Galería de fotos</h2>
+    </div>
+    <div class="all-photos-content">
+      <div id="all-photos-grid" class="all-photos-grid">
+        <!-- Dynamically loaded photos will be appended here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Lightbox Modal -->
+  <div id="lightbox-modal" class="lightbox">
+    <span class="lightbox-counter"></span>
+    <span class="lightbox-close">&times;</span>
+    <button class="lightbox-prev" aria-label="Anterior"><i class="fa-solid fa-chevron-left"></i></button>
+    <div class="lightbox-content">
+      <img id="lightbox-img" src="" alt="Vista ampliada">
+    </div>
+    <button class="lightbox-next" aria-label="Siguiente"><i class="fa-solid fa-chevron-right"></i></button>
+  </div>
+
+  <!-- Flatpickr scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <!-- Spanish translation for Flatpickr -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+  <!-- Main JavaScript File -->
+  <script src="index.js"></script>
+</body>
+</html>

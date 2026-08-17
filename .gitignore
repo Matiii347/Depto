@@ -1,0 +1,19 @@
+# Node dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment & Secrets
+.env
+.env.local
+.env.production
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Build & document artifacts
+Contrato_Alcance_y_Objetivos.docx
+Contrato_Alcance_y_Objetivos.pdf
+Contrato_Alcance_y_Objetivos.html

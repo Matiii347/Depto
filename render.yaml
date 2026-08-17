@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: depto-web
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: depto-db
+          property: connectionString
+      - key: DB_SSL
+        value: "true"
+      - key: WA_ADMIN_BR
+        sync: false
+      - key: WA_FAMILIA_AR
+        sync: false
+      - key: MODERATION_SECRET
+        generateValue: true
+
+databases:
+  - name: depto-db
+    plan: free
+    databaseName: Deptos
+    user: depto_user

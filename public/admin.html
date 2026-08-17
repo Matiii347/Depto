@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FloripaRent - Panel de Administración</title>
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- FontAwesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Flatpickr (Calendar library) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
+  
+  <style>
+    :root {
+      --primary: #ff385c;
+      --primary-hover: #e61e4d;
+      --dark: #222222;
+      --grey-dark: #717171;
+      --grey-light: #f7f7f7;
+      --border-color: #dddddd;
+      --shadow-sm: 0 2px 4px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.08);
+      --border-radius-sm: 8px;
+      --border-radius-md: 12px;
+      --border-radius-lg: 24px;
+      --font-main: 'Inter', sans-serif;
+      --font-title: 'Outfit', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-main);
+      color: var(--dark);
+      background-color: #f9f9f9;
+      line-height: 1.5;
+    }
+
+    .outfit-font {
+      font-family: var(--font-title);
+    }
+
+    /* Header styling */
+    .admin-header {
+      background-color: #ffffff;
+      border-bottom: 1px solid var(--border-color);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-title);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .user-info {
+      font-size: 14px;
+      color: var(--grey-dark);
+      font-weight: 500;
+    }
+
+    .btn-logout {
+      background: none;
+      border: 1px solid var(--border-color);
+      padding: 8px 16px;
+      border-radius: var(--border-radius-sm);
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--dark);
+      transition: all 0.2s;
+    }
+
+    .btn-logout:hover {
+      background-color: var(--grey-light);
+      border-color: var(--dark);
+    }
+
+    /* Main Container */
+    .admin-container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 24px;
+    }
+
+    /* Login Form styling */
+    .login-wrapper {
+      max-width: 450px;
+      margin: 100px auto;
+      background-color: #ffffff;
+      padding: 40px;
+      border-radius: var(--border-radius-md);
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border-color);
+    }
+
+    .login-wrapper h2 {
+      margin-bottom: 24px;
+      font-size: 26px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--grey-dark);
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius-sm);
+      font-family: var(--font-main);
+      font-size: 15px;
+      color: var(--dark);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-group input:focus, .form-group select:focus {
+      border-color: var(--primary);
+    }
+
+    .btn-primary {
+      width: 100%;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: var(--border-radius-sm);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .error-msg {
+      color: var(--primary);
+      font-size: 14px;
+      margin-top: 10px;
+      text-align: center;
+      display: none;
+    }
+
+    /* Dashboard Layout */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      gap: 32px;
+    }
+
+    .sidebar {
+      background-color: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius-md);
+      padding: 16px;
+      height: fit-content;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .sidebar-menu {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .menu-item {
+      padding: 12px 16px;
+      border-radius: var(--border-radius-sm);
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--grey-dark);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.2s;
+    }
+
+    .menu-item:hover {
+      background-color: var(--grey-light);
+      color: var(--dark);
+    }
+
+    .menu-item.active {
+      background-color: rgba(255, 56, 92, 0.08);
+      color: var(--primary);
+    }
+
+    .dashboard-content {
+      background-color: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius-md);
+      padding: 32px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .dashboard-section {
+      display: none;
+    }
+
+    .dashboard-section.active {
+      display: block;
+    }
+
+    .section-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    /* Tables */
+    .table-container {
+      overflow-x: auto;
+      margin-top: 16px;
+    }
+
+    .custom-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    .custom-table th {
+      background-color: var(--grey-light);
+      padding: 12px 16px;
+      font-weight: 600;
+      color: var(--grey-dark);
+      border-bottom: 2px solid var(--border-color);
+      text-transform: uppercase;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .custom-table td {
+      padding: 16px;
+      border-bottom: 1px solid var(--border-color);
+      vertical-align: middle;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .badge-confirmada {
+      background-color: #e6f7ed;
+      color: #108a4c;
+    }
+
+    .badge-pendiente {
+      background-color: #fff9e6;
+      color: #b37d00;
+    }
+
+    .badge-rechazada {
+      background-color: #ffebe6;
+      color: #bf2100;
+    }
+
+    .badge-limpieza {
+      background-color: #e6f2ff;
+      color: #0066cc;
+    }
+
+    .badge-mantenimiento {
+      background-color: #f2e6ff;
+      color: #6600cc;
+    }
+
+    .action-btn {
+      padding: 6px 12px;
+      border-radius: var(--border-radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      margin-right: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-confirm {
+      background-color: #108a4c;
+      color: white;
+    }
+
+    .btn-confirm:hover {
+      background-color: #0d703d;
+    }
+
+    .btn-reject {
+      background-color: #bf2100;
+      color: white;
+    }
+
+    .btn-reject:hover {
+      background-color: #991a00;
+    }
+
+    .btn-delete {
+      background-color: transparent;
+      border-color: var(--border-color);
+      color: var(--grey-dark);
+    }
+
+    .btn-delete:hover {
+      background-color: var(--grey-light);
+      color: var(--dark);
+      border-color: var(--dark);
+    }
+
+    .date-row {
+      font-weight: 600;
+    }
+
+    .guest-contact-info {
+      font-size: 12px;
+      color: var(--grey-dark);
+      margin-top: 4px;
+    }
+
+    /* Notification */
+    .notification {
+      padding: 12px 16px;
+      border-radius: var(--border-radius-sm);
+      margin-bottom: 24px;
+      font-size: 15px;
+      display: none;
+    }
+
+    .notification-success {
+      background-color: #e6f7ed;
+      color: #108a4c;
+      border: 1px solid #c2e2cf;
+    }
+
+    .notification-error {
+      background-color: #ffebe6;
+      color: #bf2100;
+      border: 1px solid #f5c2b8;
+    }
+
+    /* Rates Form Grid */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      max-width: 600px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        margin-bottom: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Admin Header (only visible when logged in) -->
+  <header class="admin-header" id="admin-header" style="display: none;">
+    <a href="/" class="logo">
+      <i class="fa-solid fa-umbrella-beach"></i>
+      <span>FloripaRent <span style="font-weight: 400; font-size: 14px; color: var(--grey-dark);">Panel</span></span>
+    </a>
+    <div class="header-right">
+      <span class="user-info" id="user-display">Propietario</span>
+      <button class="btn-logout" id="btn-logout">Cerrar Sesión</button>
+    </div>
+  </header>
+
+  <div class="admin-container">
+    
+    <!-- Login Panel -->
+    <div class="login-wrapper" id="login-panel">
+      <h2 class="outfit-font">Acceso Propietario</h2>
+      <form id="login-form">
+        <div class="form-group">
+          <label for="login-email">Correo Electrónico</label>
+          <input type="email" id="login-email" required placeholder="ejemplo@alquileres.com">
+        </div>
+        <div class="form-group">
+          <label for="login-password">Contraseña</label>
+          <input type="password" id="login-password" required placeholder="••••••••">
+        </div>
+        <button type="submit" class="btn-primary">Ingresar</button>
+        <div class="error-msg" id="login-error">Usuario o contraseña incorrectos.</div>
+      </form>
+    </div>
+
+    <!-- Admin Dashboard Panel -->
+    <div class="dashboard-grid" id="dashboard-panel" style="display: none;">
+      
+      <!-- Sidebar Navigation -->
+      <aside class="sidebar">
+        <ul class="sidebar-menu">
+          <li class="menu-item active" data-target="section-reservas">
+            <i class="fa-solid fa-calendar-check"></i> Reservas y Bloqueos
+          </li>
+          <li class="menu-item" data-target="section-bloquear">
+            <i class="fa-solid fa-ban"></i> Bloquear Fechas
+          </li>
+          <li class="menu-item" data-target="section-tarifas">
+            <i class="fa-solid fa-tags"></i> Ajustes de Tarifas
+          </li>
+        </ul>
+      </aside>
+
+      <!-- Main Panel Content -->
+      <main class="dashboard-content">
+        
+        <!-- Alerts/Notifications -->
+        <div class="notification" id="dashboard-notification"></div>
+
+        <!-- Section 1: Reservas y Bloqueos -->
+        <section class="dashboard-section active" id="section-reservas">
+          <h2 class="section-title outfit-font">Gestión de Reservas y Fechas Bloqueadas</h2>
+          
+          <div class="table-container">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Huésped / Motivo</th>
+                  <th>Fechas</th>
+                  <th>Total</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="reservas-table-body">
+                <tr>
+                  <td colspan="5" style="text-align: center; color: var(--grey-dark);">Cargando reservas...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Section 2: Bloquear Fechas -->
+        <section class="dashboard-section" id="section-bloquear">
+          <h2 class="section-title outfit-font">Bloquear Rango de Fechas</h2>
+          <p style="color: var(--grey-dark); margin-bottom: 24px;">Utiliza este formulario para bloquear el calendario cuando vayas a usar el departamento tú mismo, o cuando se requieran días de mantenimiento o limpieza especial.</p>
+          
+          <form id="bloquear-form" style="max-width: 500px;">
+            <div class="form-group">
+              <label for="datepicker-bloquear">Seleccionar Rango de Fechas</label>
+              <input type="text" id="datepicker-bloquear" placeholder="Haz clic para seleccionar fechas" required readonly>
+            </div>
+            
+            <div class="form-group">
+              <label for="bloquear-motivo">Motivo del Bloqueo</label>
+              <select id="bloquear-motivo" required>
+                <option value="bloqueado_mantenimiento">Uso Propio / Mantenimiento</option>
+                <option value="bloqueado_limpieza">Bloqueo de Limpieza Especial</option>
+              </select>
+            </div>
+
+            <button type="submit" class="btn-primary" style="margin-top: 10px;">Aplicar Bloqueo</button>
+          </form>
+        </section>
+
+        <!-- Section 3: Ajustes de Tarifas -->
+        <section class="dashboard-section" id="section-tarifas">
+          <h2 class="section-title outfit-font">Modificar Tarifas del Departamento</h2>
+          <p style="color: var(--grey-dark); margin-bottom: 24px;">Configura el precio base por noche y la tasa única de limpieza que se cobran automáticamente en las cotizaciones.</p>
+          
+          <form id="tarifas-form">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="precio-noche">Precio Base por Noche (R$)</label>
+                <input type="number" id="precio-noche" required min="1" step="1">
+              </div>
+              <div class="form-group">
+                <label for="tasa-limpieza">Tasa de Limpieza (R$)</label>
+                <input type="number" id="tasa-limpieza" required min="0" step="1">
+              </div>
+            </div>
+            <button type="submit" class="btn-primary" style="max-width: 250px; margin-top: 10px;">Guardar Cambios</button>
+          </form>
+        </section>
+
+      </main>
+
+    </div>
+
+  </div>
+
+  <!-- Flatpickr Script -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+  <!-- Admin Script File -->
+  <script src="admin.js"></script>
+</body>
+</html>
