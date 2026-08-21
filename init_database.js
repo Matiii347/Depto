@@ -136,8 +136,8 @@ async function init() {
           'Excelente Apartamento ubicado a 250m de la playa y a 400m del centro de los Ingleses. Con 2 dormitorios con aire acondicionado (1 suite), baño social completo, cocina totalmente equipada, gran sala de estar con ventilador, TV inteligente y wifi. Sacada con barbacoa, zona de servicio con lavarropas, garaje cubierto privado, duchas externas y espacio para guardar sillas de playa. ¡Ideal para descansar en la comodidad y excelente ubicación! Incluye ropa de cama y toallas.',
           'Rua das Gaivotas, Praia dos Ingleses, Florianópolis, Santa Catarina, Brasil',
           5,
-          350.00,
-          150.00,
+          130.00,
+          300.00,
           'R$',
           true
         ) RETURNING id;

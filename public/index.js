@@ -156,30 +156,79 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  function getRateForNight(dateObj) {
+    const month = dateObj.getMonth() + 1;
+    const day = dateObj.getDate();
+
+    if (month === 11) return 400; // Noviembre
+    if (month === 12) return day >= 24 ? 850 : 450; // Diciembre
+    if (month === 1) return day <= 3 ? 850 : 700; // Enero
+    if (month === 2) return 600; // Febrero
+    if (month === 3) return 500; // Marzo
+    return 130; // Temporada Baja (Abril a Octubre)
+  }
+
+  function calculateStayQuote(startDate, endDate) {
+    let subtotal = 0;
+    let nights = 0;
+    let touchesLowSeason = false;
+    
+    let current = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+    const end = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+    
+    while (current < end) {
+      const m = current.getMonth() + 1;
+      if (m >= 4 && m <= 10) touchesLowSeason = true;
+      
+      subtotal += getRateForNight(current);
+      nights++;
+      current.setDate(current.getDate() + 1);
+    }
+    
+    const cleaningFee = 300; // R$ 300
+    const total = subtotal + cleaningFee;
+    
+    return {
+      nights,
+      subtotal,
+      cleaningFee,
+      total,
+      touchesLowSeason,
+      averageRate: nights > 0 ? Math.round(subtotal / nights) : 130
+    };
+  }
+
   // Calculate and display dynamic pricing
   function updatePriceBreakdown() {
+    const minNightsNotice = document.getElementById('min-nights-notice');
+
     if (selectedDates.length < 2 || !propertyData) {
       priceBreakdown.classList.add('hidden');
+      if (minNightsNotice) minNightsNotice.classList.add('hidden');
       return;
     }
 
     const start = selectedDates[0];
     const end = selectedDates[1];
     
-    const diffTime = Math.abs(end - start);
-    const nights = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const quote = calculateStayQuote(start, end);
     
-    const basePrice = parseFloat(propertyData.precio_base_noche);
-    const cleanPrice = parseFloat(propertyData.tasa_limpieza);
-    
-    const subtotal = nights * basePrice;
-    const total = subtotal + cleanPrice;
+    if (quote.touchesLowSeason && quote.nights < 10) {
+      if (minNightsNotice) {
+        minNightsNotice.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> En <strong>Temporada Baja</strong> (Abril a Octubre) la estadía mínima requerida es de <strong>10 noches</strong>.';
+        minNightsNotice.classList.remove('hidden');
+      }
+      priceBreakdown.classList.add('hidden');
+      return;
+    } else {
+      if (minNightsNotice) minNightsNotice.classList.add('hidden');
+    }
     
     // Update labels
-    nightsCalc.textContent = `${propertyData.moneda} ${basePrice.toFixed(0)} x ${nights} noches`;
-    subtotalAmount.textContent = `${propertyData.moneda} ${subtotal.toLocaleString()}`;
-    cleaningAmount.textContent = `${propertyData.moneda} ${cleanPrice.toFixed(0)}`;
-    totalAmount.textContent = `${propertyData.moneda} ${total.toLocaleString()}`;
+    nightsCalc.textContent = `Promedio R$ ${quote.averageRate} x ${quote.nights} noches`;
+    subtotalAmount.textContent = `R$ ${quote.subtotal.toLocaleString()}`;
+    cleaningAmount.textContent = `R$ ${quote.cleaningFee.toLocaleString()}`;
+    totalAmount.textContent = `R$ ${quote.total.toLocaleString()}`;
     
     priceBreakdown.classList.remove('hidden');
   }
@@ -191,7 +240,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const countryValid = guestCountry.value !== "";
     const datesValid = selectedDates.length === 2;
 
-    btnSubmit.disabled = !(nameValid && contactValid && countryValid && datesValid);
+    let minNightsOk = true;
+    if (selectedDates.length === 2) {
+      const quote = calculateStayQuote(selectedDates[0], selectedDates[1]);
+      if (quote.touchesLowSeason && quote.nights < 10) {
+        minNightsOk = false;
+      }
+    }
+
+    btnSubmit.disabled = !(nameValid && contactValid && countryValid && datesValid && minNightsOk);
   }
 
   [guestName, guestContact, guestCountry].forEach(el => {

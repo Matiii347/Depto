@@ -2,6 +2,47 @@ const db = require('../db');
 const crypto = require('crypto');
 require('dotenv').config();
 
+function getRateForNight(dateObj) {
+  const month = dateObj.getMonth() + 1;
+  const day = dateObj.getDate();
+
+  if (month === 11) return 400;
+  if (month === 12) return day >= 24 ? 850 : 450;
+  if (month === 1) return day <= 3 ? 850 : 700;
+  if (month === 2) return 600;
+  if (month === 3) return 500;
+  return 130;
+}
+
+function calculateStayQuote(startDate, endDate) {
+  let subtotal = 0;
+  let nights = 0;
+  let touchesLowSeason = false;
+  
+  let current = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+  const end = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+  
+  while (current < end) {
+    const m = current.getMonth() + 1;
+    if (m >= 4 && m <= 10) touchesLowSeason = true;
+    
+    subtotal += getRateForNight(current);
+    nights++;
+    current.setDate(current.getDate() + 1);
+  }
+  
+  const tasaLimpieza = 300.00;
+  const total = subtotal + tasaLimpieza;
+  
+  return {
+    nights,
+    subtotal,
+    tasaLimpieza,
+    total,
+    touchesLowSeason
+  };
+}
+
 const procesarReserva = async (req, res) => {
   const { id: propiedad_id } = req.params;
   const {
@@ -24,8 +65,17 @@ const procesarReserva = async (req, res) => {
     return res.status(400).json({ status: 'error', message: 'Fechas de ingreso o egreso inválidas' });
   }
 
+  // 2. Calculate seasonal quote & validate minimum stay
+  const quote = calculateStayQuote(start, end);
+  if (quote.touchesLowSeason && quote.nights < 10) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'En temporada baja la estadía mínima requerida es de 10 noches.'
+    });
+  }
+
   try {
-    // 2. Fetch property details
+    // 3. Fetch property details
     const propQuery = `SELECT * FROM propiedades WHERE id = $1 AND activo = TRUE`;
     const propResult = await db.query(propQuery, [propiedad_id]);
 
@@ -35,9 +85,7 @@ const procesarReserva = async (req, res) => {
 
     const propiedad = propResult.rows[0];
 
-    // 3. Overbooking validation
-    // Check if there is any overlap with confirmed or blocked dates
-    // Using standard mathematical interval overlap: (start_A < end_B) AND (end_A > start_B)
+    // 4. Overbooking validation
     const overlapQuery = `
       SELECT 1 FROM reservas
       WHERE propiedad_id = $1
@@ -54,13 +102,7 @@ const procesarReserva = async (req, res) => {
       });
     }
 
-    // 4. Calculate pricing
-    const diffTime = Math.abs(end - start);
-    const nights = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    const precioBase = parseFloat(propiedad.precio_base_noche);
-    const tasaLimpieza = parseFloat(propiedad.tasa_limpieza);
-    const totalCotizacion = (nights * precioBase) + tasaLimpieza;
+    const totalCotizacion = quote.total;
 
     // Begin Database Transaction to insert reservation and token row
     await db.query('BEGIN');
@@ -97,23 +139,22 @@ const procesarReserva = async (req, res) => {
     let telefonoDestino = "";
     let mensaje = "";
 
-    const formattedStart = start.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
-    const formattedEnd = end.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+    const formattedStart = start.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+    const formattedEnd = end.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
 
     if (pais_residencia === 'BR') {
-      telefonoDestino = process.env.WA_ADMIN_BR || "5548999999999";
+      telefonoDestino = process.env.WA_ADMIN_BR || "5493513425877";
       mensaje = `Olá! Sou *${huesped_nombre}*. Gostaria de solicitar uma reserva para o depto nos Ingleses.\n\n` +
-                `📅 *Período:* ${formattedStart} a ${formattedEnd} (${nights} noites)\n` +
+                `📅 *Período:* ${formattedStart} a ${formattedEnd} (${quote.nights} noites)\n` +
                 `👤 *Hóspedes:* ${propiedad.capacidad_personas} pessoas max\n` +
-                `💰 *Cotação Estimada:* R$ ${totalCotizacion.toFixed(2)} (Taxa de limpeza inclusa)\n\n` +
+                `💰 *Cotação Estimada:* R$ ${quote.total.toFixed(2)} (Taxa de limpeza R$ ${quote.tasaLimpieza.toFixed(2)} inclusa)\n\n` +
                 `Como posso prosseguir com o pagamento por PIX? Obrigado!`;
     } else {
-      // Argentina or Other
-      telefonoDestino = process.env.WA_FAMILIA_AR || "5493510000000";
+      telefonoDestino = process.env.WA_FAMILIA_AR || "5493513128672";
       mensaje = `¡Hola! Soy *${huesped_nombre}*. Vi el depto en la web y quiero solicitar una reserva:\n\n` +
-                `📅 *Fechas:* ${formattedStart} al ${formattedEnd} (${nights} noches)\n` +
+                `📅 *Fechas:* ${formattedStart} al ${formattedEnd} (${quote.nights} noches)\n` +
                 `👥 *Huéspedes:* ${propiedad.capacidad_personas} personas max\n` +
-                `💰 *Cotización Web:* R$ ${totalCotizacion.toFixed(2)} (Incluye limpieza de R$ ${tasaLimpieza.toFixed(2)})\n\n` +
+                `💰 *Cotización Web:* R$ ${quote.total.toFixed(2)} (Incluye limpieza de R$ ${quote.tasaLimpieza.toFixed(2)})\n\n` +
                 `¿Me confirman si está disponible y cómo coordinamos la seña? ¡Gracias!`;
     }
 
@@ -123,10 +164,10 @@ const procesarReserva = async (req, res) => {
       status: 'success',
       data: {
         reserva_id: reservaId,
-        noches: nights,
-        precio_noche: precioBase,
-        limpieza: tasaLimpieza,
-        total: totalCotizacion,
+        noches: quote.nights,
+        subtotal: quote.subtotal,
+        limpieza: quote.tasaLimpieza,
+        total: quote.total,
         url_contacto: whatsappLink
       }
     });
