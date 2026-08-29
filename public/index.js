@@ -11,18 +11,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const propDescription = document.getElementById('prop-description');
   const pricePerNight = document.getElementById('price-per-night');
   const datepicker = document.getElementById('datepicker');
-  
+
+
   const priceBreakdown = document.getElementById('price-breakdown');
   const nightsCalc = document.getElementById('nights-calc');
   const subtotalAmount = document.getElementById('subtotal-amount');
   const cleaningAmount = document.getElementById('cleaning-amount');
   const totalAmount = document.getElementById('total-amount');
-  
+
   const guestName = document.getElementById('guest-name');
   const guestContact = document.getElementById('guest-contact');
   const guestCountry = document.getElementById('guest-country');
   const btnSubmit = document.getElementById('btn-submit-booking');
-  
+
   const reviewsList = document.getElementById('reviews-list');
   const reviewsAvg = document.getElementById('reviews-avg');
   const reviewsCount = document.getElementById('reviews-count');
@@ -35,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const response = await fetch(`/api/propiedades/${propertyId}`);
       const result = await response.json();
-      
+
       if (result.status === 'success') {
         propertyData = result.data;
         renderPropertyInfo();
@@ -122,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const response = await fetch(`/api/propiedades/${propertyId}/disponibilidad`);
       const result = await response.json();
-      
+
       if (result.status === 'success') {
         const ranges = result.data.map(r => ({
           from: new Date(r.from),
@@ -172,22 +173,22 @@ document.addEventListener('DOMContentLoaded', () => {
     let subtotal = 0;
     let nights = 0;
     let touchesLowSeason = false;
-    
+
     let current = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
     const end = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
-    
+
     while (current < end) {
       const m = current.getMonth() + 1;
       if (m >= 4 && m <= 10) touchesLowSeason = true;
-      
+
       subtotal += getRateForNight(current);
       nights++;
       current.setDate(current.getDate() + 1);
     }
-    
+
     const cleaningFee = 300; // R$ 300
     const total = subtotal + cleaningFee;
-    
+
     return {
       nights,
       subtotal,
@@ -205,31 +206,37 @@ document.addEventListener('DOMContentLoaded', () => {
     if (selectedDates.length < 2 || !propertyData) {
       priceBreakdown.classList.add('hidden');
       if (minNightsNotice) minNightsNotice.classList.add('hidden');
+      if (propertyData) {
+        pricePerNight.textContent = `${propertyData.moneda} ${parseFloat(propertyData.precio_base_noche).toFixed(0)}`;
+      }
       return;
     }
 
     const start = selectedDates[0];
     const end = selectedDates[1];
-    
+
     const quote = calculateStayQuote(start, end);
-    
+
     if (quote.touchesLowSeason && quote.nights < 10) {
       if (minNightsNotice) {
         minNightsNotice.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> En <strong>Temporada Baja</strong> (Abril a Octubre) la estadía mínima requerida es de <strong>10 noches</strong>.';
         minNightsNotice.classList.remove('hidden');
       }
       priceBreakdown.classList.add('hidden');
+      pricePerNight.textContent = `${propertyData.moneda} ${parseFloat(propertyData.precio_base_noche).toFixed(0)}`;
       return;
     } else {
       if (minNightsNotice) minNightsNotice.classList.add('hidden');
     }
-    
+
     // Update labels
     nightsCalc.textContent = `Promedio R$ ${quote.averageRate} x ${quote.nights} noches`;
     subtotalAmount.textContent = `R$ ${quote.subtotal.toLocaleString()}`;
     cleaningAmount.textContent = `R$ ${quote.cleaningFee.toLocaleString()}`;
     totalAmount.textContent = `R$ ${quote.total.toLocaleString()}`;
-    
+
+    pricePerNight.textContent = `${propertyData.moneda} ${quote.averageRate.toFixed(0)}`;
+
     priceBreakdown.classList.remove('hidden');
   }
 
@@ -292,7 +299,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Redirect to WhatsApp Link
         window.open(result.data.url_contacto, '_blank');
-        
+
         // Refresh blocked dates
         fetchDisponibilidad();
       } else {
@@ -322,14 +329,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function renderReviews(reviews) {
     reviewsList.innerHTML = '';
-    
+
     let totalScore = 0;
     reviews.forEach(r => {
       totalScore += r.puntuacion;
-      
+
       const item = document.createElement('div');
       item.className = 'review-item';
-      
+
       const starsHtml = '★'.repeat(r.puntuacion) + '☆'.repeat(5 - r.puntuacion);
       const dateFormatted = new Date(r.fecha_creacion).toLocaleDateString('es-ES', {
         year: 'numeric',
@@ -359,7 +366,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnClose = document.querySelector('.lightbox-close');
   const btnPrev = document.querySelector('.lightbox-prev');
   const btnNext = document.querySelector('.lightbox-next');
-  
+
   const allPhotosModal = document.getElementById('all-photos-modal');
   const btnShowAll = document.getElementById('btn-show-all-photos');
   const btnCloseAllPhotos = document.querySelector('.btn-close-all-photos');

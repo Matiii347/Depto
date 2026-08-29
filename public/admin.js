@@ -280,6 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
         minDate: "today",
         dateFormat: "Y-m-d",
         locale: "es",
+        disableMobile: true,
         disable: disableRanges,
         onChange: function(selectedDates) {
           // Additional custom range checks if needed
