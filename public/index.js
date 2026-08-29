@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (month === 1) return day <= 3 ? 850 : 700; // Enero
     if (month === 2) return 600; // Febrero
     if (month === 3) return 500; // Marzo
-    return 130; // Temporada Baja (Abril a Octubre)
+    return propertyData ? parseFloat(propertyData.precio_base_noche) : 130; // Temporada Baja (Abril a Octubre)
   }
 
   function calculateStayQuote(startDate, endDate) {
@@ -179,15 +179,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     while (current < end) {
       const m = current.getMonth() + 1;
-      if (m >= 4 && m <= 10) touchesLowSeason = true;
+      if (m >= 4 && m <= 11) touchesLowSeason = true;
 
       subtotal += getRateForNight(current);
       nights++;
       current.setDate(current.getDate() + 1);
     }
 
-    const cleaningFee = 300; // R$ 300
+    const cleaningFee = propertyData ? parseFloat(propertyData.tasa_limpieza) : 300;
     const total = subtotal + cleaningFee;
+    const basePrice = propertyData ? parseFloat(propertyData.precio_base_noche) : 130;
 
     return {
       nights,
@@ -195,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
       cleaningFee,
       total,
       touchesLowSeason,
-      averageRate: nights > 0 ? Math.round(subtotal / nights) : 130
+      averageRate: nights > 0 ? Math.round(subtotal / nights) : basePrice
     };
   }
 
@@ -216,10 +217,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const end = selectedDates[1];
 
     const quote = calculateStayQuote(start, end);
-
+    
     if (quote.touchesLowSeason && quote.nights < 10) {
       if (minNightsNotice) {
-        minNightsNotice.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> En <strong>Temporada Baja</strong> (Abril a Octubre) la estadía mínima requerida es de <strong>10 noches</strong>.';
+        minNightsNotice.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> En <strong>Temporada Baja</strong> (Abril a Noviembre) la estadía mínima requerida es de <strong>10 noches</strong>.';
         minNightsNotice.classList.remove('hidden');
       }
       priceBreakdown.classList.add('hidden');
@@ -228,7 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       if (minNightsNotice) minNightsNotice.classList.add('hidden');
     }
-
+    
     // Update labels
     nightsCalc.textContent = `Promedio R$ ${quote.averageRate} x ${quote.nights} noches`;
     subtotalAmount.textContent = `R$ ${quote.subtotal.toLocaleString()}`;
