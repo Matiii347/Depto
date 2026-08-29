@@ -262,7 +262,7 @@ hr.divider {
   display: grid;
   grid-template-columns: 7fr 5fr;
   gap: 64px;
-  align-items: start;
+  align-items: stretch;
 }
 
 /* Left Column Info */
@@ -412,13 +412,13 @@ hr.divider {
   line-height: 1.6;
 }
 
-/* Right Column Booking Card (Sticky) */
-.booking-column {
-  position: sticky;
-  top: 104px; /* 80px navbar + 24px spacing */
-}
+
 
 .booking-card {
+  position: sticky;
+  top: 104px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius-lg);
