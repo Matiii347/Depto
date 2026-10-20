@@ -141,6 +141,202 @@ hr.divider {
   padding: 24px;
 }
 
+[hidden] {
+  display: none !important;
+}
+
+.home-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 24px;
+  margin: 22px 0 28px;
+}
+
+.home-eyebrow {
+  color: var(--secondary);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  margin-bottom: 8px;
+}
+
+.home-heading h1 {
+  font-size: 36px;
+  line-height: 1.15;
+  margin-bottom: 8px;
+}
+
+.home-heading > div > p:last-child {
+  color: var(--text-muted);
+}
+
+.home-property-count {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-main);
+  font-size: 14px;
+  font-weight: 600;
+  padding-bottom: 5px;
+}
+
+.home-property-count i {
+  color: var(--primary);
+}
+
+.property-map-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.8fr);
+  min-height: 540px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  background: white;
+  box-shadow: var(--shadow-sm);
+}
+
+.property-map {
+  min-height: 540px;
+  background: #e8eeea;
+  z-index: 0;
+}
+
+.property-list-panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border-left: 1px solid var(--border-color);
+}
+
+.property-list-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 22px 22px 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.property-list-heading h2 {
+  font-size: 20px;
+}
+
+.property-list-heading span {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.property-list {
+  display: grid;
+}
+
+.property-card {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr) 18px;
+  gap: 14px;
+  align-items: center;
+  min-height: 128px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+  transition: background-color 180ms ease;
+}
+
+.property-card:hover,
+.property-card:focus-visible {
+  background: hsl(184, 35%, 96%);
+}
+
+.property-card-image {
+  width: 112px;
+  height: 88px;
+  object-fit: cover;
+  border-radius: var(--border-radius-sm);
+  background: #e8eeea;
+}
+
+.property-card-placeholder {
+  display: grid;
+  place-items: center;
+  color: var(--secondary);
+  font-size: 24px;
+}
+
+.property-card-copy {
+  min-width: 0;
+}
+
+.property-card-copy h3 {
+  font-size: 15px;
+  line-height: 1.3;
+  margin-bottom: 6px;
+}
+
+.property-card-copy p {
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.property-card-copy strong {
+  display: block;
+  margin-top: 7px;
+  color: var(--dark);
+  font-size: 13px;
+}
+
+.property-card-arrow {
+  color: var(--primary);
+}
+
+.property-list-status {
+  padding: 20px 22px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.property-map-marker {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 3px solid white;
+  border-radius: 50% 50% 50% 4px;
+  background: var(--primary);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.28);
+  color: white;
+  font-family: var(--font-family-heading);
+  font-size: 14px;
+  font-weight: 700;
+  transform: rotate(-45deg);
+}
+
+.property-map-marker span {
+  transform: rotate(45deg);
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: var(--border-radius-sm);
+}
+
+.map-popup-link {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+body.view-home .detail-nav-link {
+  display: none;
+}
+
+body.view-property .home-nav-link {
+  display: none;
+}
+
+body.preview-only .detail-nav-link {
+  display: none;
+}
+
 /* Property Header */
 .property-header {
   margin-bottom: 24px;
@@ -634,6 +830,45 @@ hr.divider {
 }
 
 @media (max-width: 768px) {
+  .home-heading {
+    align-items: start;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .home-heading h1 {
+    font-size: 30px;
+  }
+
+  .home-property-count {
+    padding: 0;
+  }
+
+  .property-map-layout {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+
+  .property-map {
+    min-height: 380px;
+  }
+
+  .property-list-panel {
+    border-left: 0;
+  }
+
+  .property-card {
+    grid-template-columns: 88px minmax(0, 1fr) 18px;
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .property-card-image {
+    width: 88px;
+    height: 76px;
+  }
+
   .gallery-grid {
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 150px 150px;

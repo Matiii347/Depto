@@ -1,9 +1,13 @@
 const { Pool } = require('pg');
 require('dotenv').config();
 
-const connectionConfig = process.env.DATABASE_URL
+const databaseUrl = process.env.NODE_ENV === 'production'
+  ? process.env.DATABASE_URL || process.env.EXTERNAL_DATABASE_URL
+  : process.env.EXTERNAL_DATABASE_URL || process.env.DATABASE_URL;
+
+const connectionConfig = databaseUrl
   ? {
-      connectionString: process.env.DATABASE_URL,
+      connectionString: databaseUrl,
       ssl: process.env.DB_SSL === 'true' || process.env.NODE_ENV === 'production'
         ? { rejectUnauthorized: false }
         : false

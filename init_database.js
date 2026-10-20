@@ -6,14 +6,17 @@ function hashPassword(password) {
   return crypto.createHash('sha256').update(password).digest('hex');
 }
 
-const useDatabaseUrl = !!process.env.DATABASE_URL;
+const databaseUrl = process.env.NODE_ENV === 'production'
+  ? process.env.DATABASE_URL || process.env.EXTERNAL_DATABASE_URL
+  : process.env.EXTERNAL_DATABASE_URL || process.env.DATABASE_URL;
+const useDatabaseUrl = !!databaseUrl;
 
 const sslOption = process.env.DB_SSL === 'true' || process.env.NODE_ENV === 'production'
   ? { rejectUnauthorized: false }
   : false;
 
 const pgConfig = useDatabaseUrl
-  ? { connectionString: process.env.DATABASE_URL, ssl: sslOption }
+  ? { connectionString: databaseUrl, ssl: sslOption }
   : {
       host: process.env.DB_HOST || '127.0.0.1',
       user: process.env.DB_USER || 'postgres',
@@ -147,30 +150,30 @@ async function init() {
       // Seed photos
       console.log("Seeding real property photos...");
       const photos = [
-        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM.jpeg', main: true },
-        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (4).jpeg', main: false },
-        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (6).jpeg', main: false },
-        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.10 PM (4).jpeg', main: false },
-        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (11).jpeg', main: false },
-        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.08 PM.jpeg', main: false },
-        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (1).jpeg', main: false },
-        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (2).jpeg', main: false },
-        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (3).jpeg', main: false },
-        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (5).jpeg', main: false },
-        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (7).jpeg', main: false },
-        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (8).jpeg', main: false },
-        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (9).jpeg', main: false },
-        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (10).jpeg', main: false },
-        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (12).jpeg', main: false },
-        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (13).jpeg', main: false },
-        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.09 PM (14).jpeg', main: false },
-        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.10 PM.jpeg', main: false },
-        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.10 PM (1).jpeg', main: false },
-        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.10 PM (2).jpeg', main: false },
-        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.10 PM (3).jpeg', main: false },
-        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.11 PM.jpeg', main: false },
-        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.11 PM (1).jpeg', main: false },
-        { url: '/img/WhatsApp Image 2026-07-29 at 9.28.11 PM (2).jpeg', main: false }
+        { url: '/imgCostaDoSol/WhatsApp Image 2026-07-29 at 9.28.09 PM.jpeg', main: true },
+        { url: '/imgCostaDoSol/WhatsApp Image 2026-07-29 at 9.28.09 PM (4).jpeg', main: false },
+        { url: '/imgCostaDoSol/WhatsApp Image 2026-07-29 at 9.28.09 PM (6).jpeg', main: false },
+        { url: '/imgCostaDoSol/WhatsApp Image 2026-07-29 at 9.28.10 PM (4).jpeg', main: false },
+        { url: '/imgCostaDoSol/WhatsApp Image 2026-07-29 at 9.28.09 PM (11).jpeg', main: false },
+        { url: '/imgCostaDoSol/WhatsApp Image 2026-07-29 at 9.28.08 PM.jpeg', main: false },
+        { url: '/imgCostaDoSol/WhatsApp Image 2026-07-29 at 9.28.09 PM (1).jpeg', main: false },
+        { url: '/imgCostaDoSol/WhatsApp Image 2026-07-29 at 9.28.09 PM (2).jpeg', main: false },
+        { url: '/imgCostaDoSol/WhatsApp Image 2026-07-29 at 9.28.09 PM (3).jpeg', main: false },
+        { url: '/imgCostaDoSol/WhatsApp Image 2026-07-29 at 9.28.09 PM (5).jpeg', main: false },
+        { url: '/imgCostaDoSol/WhatsApp Image 2026-07-29 at 9.28.09 PM (7).jpeg', main: false },
+        { url: '/imgCostaDoSol/WhatsApp Image 2026-07-29 at 9.28.09 PM (8).jpeg', main: false },
+        { url: '/imgCostaDoSol/WhatsApp Image 2026-07-29 at 9.28.09 PM (9).jpeg', main: false },
+        { url: '/imgCostaDoSol/WhatsApp Image 2026-07-29 at 9.28.09 PM (10).jpeg', main: false },
+        { url: '/imgCostaDoSol/WhatsApp Image 2026-07-29 at 9.28.09 PM (12).jpeg', main: false },
+        { url: '/imgCostaDoSol/WhatsApp Image 2026-07-29 at 9.28.09 PM (13).jpeg', main: false },
+        { url: '/imgCostaDoSol/WhatsApp Image 2026-07-29 at 9.28.09 PM (14).jpeg', main: false },
+        { url: '/imgCostaDoSol/WhatsApp Image 2026-07-29 at 9.28.10 PM.jpeg', main: false },
+        { url: '/imgCostaDoSol/WhatsApp Image 2026-07-29 at 9.28.10 PM (1).jpeg', main: false },
+        { url: '/imgCostaDoSol/WhatsApp Image 2026-07-29 at 9.28.10 PM (2).jpeg', main: false },
+        { url: '/imgCostaDoSol/WhatsApp Image 2026-07-29 at 9.28.10 PM (3).jpeg', main: false },
+        { url: '/imgCostaDoSol/WhatsApp Image 2026-07-29 at 9.28.11 PM.jpeg', main: false },
+        { url: '/imgCostaDoSol/WhatsApp Image 2026-07-29 at 9.28.11 PM (1).jpeg', main: false },
+        { url: '/imgCostaDoSol/WhatsApp Image 2026-07-29 at 9.28.11 PM (2).jpeg', main: false }
       ];
 
       for (const photo of photos) {

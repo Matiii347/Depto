@@ -1,11 +1,17 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const propertyId = 1; // Hardcoded pilot property for Phase 1
+  const propertyId = new URLSearchParams(window.location.search).get('propiedad');
   let propertyData = null;
   let flatpickrInstance = null;
+  let propertyMap = null;
 
   let allPhotosList = [];
 
   // DOM Elements
+  const propertyHome = document.getElementById('property-home');
+  const propertyDetailView = document.getElementById('property-detail-view');
+  const propertyList = document.getElementById('property-list');
+  const propertyListStatus = document.getElementById('property-list-status');
+  const propertyCount = document.getElementById('property-count');
   const propTitle = document.getElementById('prop-title');
   const propLocation = document.getElementById('prop-location');
   const propDescription = document.getElementById('prop-description');
@@ -31,19 +37,235 @@ document.addEventListener('DOMContentLoaded', () => {
   // State variables
   let selectedDates = [];
 
+  const propertyCoordinates = {
+    1: [-27.4340413, -48.3940258],
+    2: [-27.4384865, -48.3917552]
+  };
+  function buildPropertyPhotoUrls(folder, date, photoGroups) {
+    return Object.entries(photoGroups).flatMap(([time, lastIndex]) =>
+      Array.from({ length: lastIndex + 1 }, (_, index) => {
+        const suffix = index === 0 ? '' : ` (${index})`;
+        return `/${folder}/WhatsApp Image ${date} at ${time} PM${suffix}.jpeg`;
+      })
+    );
+  }
+
+  const gentilPhotoUrls = buildPropertyPhotoUrls('imgResidencialGentil', '2026-10-11', {
+    '8.15.49': 0,
+    '8.15.50': 2,
+    '8.15.51': 2,
+    '8.15.52': 2,
+    '8.15.53': 3,
+    '8.15.54': 2,
+    '8.15.55': 2,
+    '8.15.56': 2,
+    '8.15.57': 2,
+    '8.15.58': 3,
+    '8.15.59': 2,
+    '8.16.00': 2,
+    '8.16.01': 2,
+    '8.16.02': 1,
+    '8.16.03': 2,
+    '8.16.04': 2,
+    '8.16.05': 2,
+    '8.16.06': 3,
+    '8.16.07': 0
+  });
+  const gentilCoverPhoto = gentilPhotoUrls.find(url => url.includes('8.15.51 PM (1).jpeg'));
+  const gentilUnitMarkerPhoto = gentilPhotoUrls.find(url => url.includes('8.15.50 PM (1).jpeg'));
+
+  const propertyPhotoUrls = {
+    1: buildPropertyPhotoUrls('imgCostaDoSol', '2026-07-29', {
+      '9.28.09': 14,
+      '9.28.10': 4,
+      '9.28.11': 2
+    }),
+    2: [
+      gentilCoverPhoto,
+      ...gentilPhotoUrls.filter(url => url !== gentilCoverPhoto && url !== gentilUnitMarkerPhoto)
+    ]
+  };
+  const propertyPreviewData = [
+    {
+      id: 1,
+      nombre: 'Depto en Condomínio Costa do Sol',
+      ubicacion: 'Rua das Gaivotas, Praia dos Ingleses',
+      descripcion: 'Excelente apartamento ubicado a 250 m de la playa y a 400 m del centro de Ingleses. Tiene 2 dormitorios con aire acondicionado (1 suite), baño social completo, cocina totalmente equipada, sala de estar con ventilador, TV inteligente y wifi. Balcón con barbacoa, lavarropas y cochera cubierta privada. Incluye ropa de cama y toallas.',
+      capacidad_personas: 5,
+      precio_base_noche: 130,
+      tasa_limpieza: 300,
+      foto_principal: propertyPhotoUrls[1][0]
+    },
+    {
+      id: 2,
+      nombre: 'Departamento en Residencial Villa Gentil',
+      ubicacion: 'Praia dos Ingleses, Florianópolis',
+      foto_principal: propertyPhotoUrls[2][0]
+    }
+  ];
+
+  function propertyUrl(id) {
+    return `/?propiedad=${encodeURIComponent(id)}`;
+  }
+
+  function initializePropertyMap() {
+    if (typeof L === 'undefined') return;
+
+    propertyMap = L.map('property-map', { scrollWheelZoom: false, zoomControl: true });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap'
+    }).addTo(propertyMap);
+
+    const mapBounds = [];
+    Object.entries(propertyCoordinates).forEach(([id, coordinates]) => {
+      const markerIcon = L.divIcon({
+        className: '',
+        html: `<div class="property-map-marker"><span>${id}</span></div>`,
+        iconSize: [38, 38],
+        iconAnchor: [19, 38]
+      });
+      const marker = L.marker(coordinates, {
+        icon: markerIcon,
+        title: `Departamento ${id}`,
+        alt: `Ver departamento ${id}`,
+        keyboard: true
+      }).addTo(propertyMap);
+      marker.bindTooltip(`Departamento ${id}`);
+      marker.on('click', () => {
+        window.location.href = propertyUrl(id);
+      });
+      mapBounds.push(coordinates);
+    });
+
+    propertyMap.fitBounds(mapBounds, { padding: [64, 64], maxZoom: 15 });
+  }
+
+  async function fetchProperties() {
+    try {
+      const response = await fetch('/api/propiedades');
+      const result = await response.json();
+
+      if (!response.ok || result.status !== 'success') {
+        throw new Error(result.message || 'No se pudieron cargar los alojamientos.');
+      }
+
+      renderProperties(result.data);
+    } catch (error) {
+      console.error('Error fetching properties:', error);
+      renderProperties(propertyPreviewData);
+    }
+  }
+
+  function renderProperties(properties) {
+    propertyList.innerHTML = '';
+    propertyListStatus.hidden = true;
+    propertyCount.textContent = properties.length;
+
+    if (properties.length === 0) {
+      propertyListStatus.textContent = 'No hay departamentos disponibles por el momento.';
+      propertyListStatus.hidden = false;
+      return;
+    }
+
+    properties.forEach((property, index) => {
+      const cardLink = document.createElement('a');
+      cardLink.className = 'property-card';
+      cardLink.href = propertyUrl(property.id);
+      cardLink.setAttribute('aria-label', `Ver ${property.nombre}`);
+
+      const photoUrl = propertyPhotoUrls[property.id]?.[0] || property.foto_principal;
+      if (photoUrl) {
+        const image = document.createElement('img');
+        image.className = 'property-card-image';
+        image.src = photoUrl;
+        image.alt = '';
+        image.loading = 'lazy';
+        cardLink.appendChild(image);
+      } else {
+        const placeholder = document.createElement('span');
+        placeholder.className = 'property-card-image property-card-placeholder';
+        placeholder.innerHTML = '<i class="fa-solid fa-umbrella-beach" aria-hidden="true"></i>';
+        cardLink.appendChild(placeholder);
+      }
+
+      const copy = document.createElement('div');
+      copy.className = 'property-card-copy';
+      const title = document.createElement('h3');
+      title.textContent = property.nombre;
+      const location = document.createElement('p');
+      location.textContent = property.ubicacion;
+      const price = document.createElement('strong');
+      const nightlyPrice = Number(property.precio_base_noche);
+      price.textContent = nightlyPrice > 0
+        ? `${property.moneda || 'R$'} ${nightlyPrice.toFixed(0)} / noche`
+        : 'Consultar disponibilidad';
+      copy.append(title, location, price);
+      cardLink.appendChild(copy);
+
+      const arrow = document.createElement('i');
+      arrow.className = 'fa-solid fa-arrow-right property-card-arrow';
+      arrow.setAttribute('aria-hidden', 'true');
+      cardLink.appendChild(arrow);
+      propertyList.appendChild(cardLink);
+
+    });
+  }
+
+  function renderOfflinePropertyPreview() {
+    const preview = propertyPreviewData.find(property => String(property.id) === propertyId);
+    if (!preview) {
+      propTitle.textContent = 'No encontramos este departamento';
+      return;
+    }
+
+    propertyData = {
+      ...preview,
+      descripcion: preview.descripcion || '',
+      moneda: 'R$',
+      precio_base_noche: preview.precio_base_noche || 0,
+      tasa_limpieza: preview.tasa_limpieza || 0,
+      fotos: propertyPhotoUrls[preview.id].map((url_imagen, index) => ({
+        url_imagen,
+        es_principal: index === 0
+      }))
+    };
+    document.body.classList.add('preview-only');
+    const hasConfirmedDetails = preview.id === 1;
+    document.getElementById('detalles').hidden = !hasConfirmedDetails;
+    renderPropertyInfo();
+
+    if (hasConfirmedDetails) {
+      initCalendar([]);
+      btnSubmit.disabled = true;
+      btnSubmit.innerHTML = '<i class="fa-solid fa-circle-info"></i> Reserva no disponible ahora';
+      document.querySelector('.card-footer-note').textContent = 'Vista previa: conectá la base de datos para confirmar disponibilidad y solicitar la reserva.';
+    }
+  }
+
   // Fetch Property Info
   async function fetchProperty() {
     try {
       const response = await fetch(`/api/propiedades/${propertyId}`);
       const result = await response.json();
 
-      if (result.status === 'success') {
+      if (response.ok && result.status === 'success') {
         propertyData = result.data;
+        if (propertyPhotoUrls[propertyId]) {
+          propertyData.fotos = propertyPhotoUrls[propertyId].map((url_imagen, index) => ({
+            url_imagen,
+            es_principal: index === 0
+          }));
+        }
         renderPropertyInfo();
         fetchDisponibilidad();
+        fetchReviews();
+      } else {
+        renderOfflinePropertyPreview();
       }
     } catch (error) {
       console.error("Error fetching property details:", error);
+      renderOfflinePropertyPreview();
     }
   }
 
@@ -55,6 +277,8 @@ document.addEventListener('DOMContentLoaded', () => {
     pricePerNight.textContent = `${propertyData.moneda} ${parseFloat(propertyData.precio_base_noche).toFixed(0)}`;
 
     allPhotosList = propertyData.fotos || [];
+    const galleryContainer = document.querySelector('.gallery-container');
+    if (galleryContainer) galleryContainer.hidden = allPhotosList.length === 0;
 
     // Set photos dynamically in the main grid
     if (allPhotosList.length > 0) {
@@ -243,6 +467,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Form validation listener
   function validateForm() {
+    if (document.body.classList.contains('preview-only')) {
+      btnSubmit.disabled = true;
+      return;
+    }
+
     const nameValid = guestName.value.trim().length > 2;
     const contactValid = guestContact.value.trim().length > 5;
     const countryValid = guestCountry.value !== "";
@@ -455,6 +684,16 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Initial runs
-  fetchProperty();
-  fetchReviews();
+  if (propertyId) {
+    document.body.classList.add('view-property');
+    propertyDetailView.hidden = false;
+    propertyHome.hidden = true;
+    fetchProperty();
+  } else {
+    document.body.classList.add('view-home');
+    propertyHome.hidden = false;
+    propertyDetailView.hidden = true;
+    initializePropertyMap();
+    fetchProperties();
+  }
 });

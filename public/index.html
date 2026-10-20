@@ -13,6 +13,7 @@
   <!-- Flatpickr (Calendar library) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <!-- Vanilla CSS Stylesheet -->
   <link rel="stylesheet" href="index.css">
 </head>
@@ -26,17 +27,42 @@
         <span>FloripaRent</span>
       </a>
       <nav class="nav-links">
-        <a href="#galeria">Galería</a>
-        <a href="#detalles">Detalles</a>
-        <a href="#ubicacion">Ubicación</a>
-        <a href="#resenas">Reseñas</a>
-        <a href="#contacto" class="btn-primary-sm">Reservar Ahora</a>
+        <a href="/" class="home-nav-link">Departamentos</a>
+        <a href="#galeria" class="detail-nav-link">Galería</a>
+        <a href="#detalles" class="detail-nav-link">Detalles</a>
+        <a href="#ubicacion" class="detail-nav-link">Ubicación</a>
+        <a href="#resenas" class="detail-nav-link">Reseñas</a>
+        <a href="#contacto" class="btn-primary-sm detail-nav-link">Reservar Ahora</a>
       </nav>
     </div>
   </header>
 
   <!-- Main Content Container -->
   <main class="main-container">
+
+    <section id="property-home" class="property-home" hidden>
+      <div class="home-heading">
+        <div>
+          <p class="home-eyebrow">FLORIANÓPOLIS · PRAIA DOS INGLESES</p>
+          <h1 class="outfit-font">Encontrá tu lugar en Ingleses</h1>
+          <p>Dos departamentos, dos ubicaciones. Elegí en el mapa dónde querés hospedarte.</p>
+        </div>
+        <span class="home-property-count"><i class="fa-solid fa-location-dot"></i> <span id="property-count">2</span> alojamientos</span>
+      </div>
+      <div id="property-map-layout" class="property-map-layout">
+        <div id="property-map" class="property-map" role="application" aria-label="Mapa de departamentos en Praia dos Ingleses"></div>
+        <div class="property-list-panel">
+          <div class="property-list-heading">
+            <h2>Departamentos</h2>
+            <span>Praia dos Ingleses</span>
+          </div>
+          <div id="property-list" class="property-list"></div>
+          <p id="property-list-status" class="property-list-status">Buscando alojamientos...</p>
+        </div>
+      </div>
+    </section>
+
+    <div id="property-detail-view" hidden>
 
     <!-- Title and Location -->
     <section class="property-header">
@@ -48,7 +74,7 @@
     <div class="gallery-container">
       <section id="galeria" class="gallery-grid">
         <div class="gallery-item main-img">
-          <img id="img-main" src="/img/WhatsApp Image 2026-07-29 at 9.28.08 PM.jpeg" alt="Vista Principal">
+          <img id="img-main" src="/imgCostaDoSol/WhatsApp Image 2026-07-29 at 9.28.09 PM.jpeg" alt="Vista Principal">
         </div>
         <div class="gallery-item side-img img1">
           <img id="img-side1" src="" alt="Interior">
@@ -260,6 +286,8 @@
 
     </section>
 
+    </div>
+
   </main>
 
   <footer class="site-footer">
@@ -297,6 +325,7 @@
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <!-- Spanish translation for Flatpickr -->
   <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <!-- Main JavaScript File -->
   <script src="index.js"></script>
 </body>

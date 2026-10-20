@@ -48,8 +48,8 @@ Una vez que Render o Railway hayan creado la base de datos PostgreSQL:
 
 1. **Obtener las URLs de la Base de Datos:**
    En el panel de Render, ingresa a tu base de datos (`depto-db`) para ver ambas URLs:
-   - **Internal Database URL:** `postgresql://depto_user:nYARcjSHWO7uGC7aUrkOIMBzsXWyvCdb@dpg-da1k7go1ne8s73ck8u0g-a/deptos` (Se utiliza en el Web Service dentro de Render).
-   - **External Database URL:** `postgresql://depto_user:nYARcjSHWO7uGC7aUrkOIMBzsXWyvCdb@dpg-da1k7go1ne8s73ck8u0g-a.oregon-postgres.render.com/deptos` (Se utiliza para conectar desde tu computadora local).
+   - **Internal Database URL:** copiala desde el panel de Render y asignala a `DATABASE_URL` en el Web Service. No la publiques en el repositorio.
+   - **External Database URL:** copiala desde el panel de Render solo si necesitás conectar desde tu computadora. Guardala en tu `.env` local, que no debe subirse al repositorio.
 
 2. **Ejecutar la siembra e inicialización de la Base de Datos (`init-db`):**
    Puedes inicializar las tablas y fotos de dos formas:
@@ -63,7 +63,7 @@ Una vez que Render o Railway hayan creado la base de datos PostgreSQL:
    - **Opción B (Desde tu computadora local):**
      En tu archivo `.env` local, coloca la `DATABASE_URL` externa:
      ```env
-     DATABASE_URL=postgresql://depto_user:nYARcjSHWO7uGC7aUrkOIMBzsXWyvCdb@dpg-da1k7go1ne8s73ck8u0g-a.oregon-postgres.render.com/deptos
+   DATABASE_URL=postgresql://USUARIO:CONTRASENA@HOST:PUERTO/NOMBRE_BASE
      DB_SSL=true
      ```
      Y ejecuta en tu terminal:
