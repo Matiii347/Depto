@@ -100,6 +100,11 @@ document.addEventListener('DOMContentLoaded', () => {
       id: 2,
       nombre: 'Departamento en Residencial Villa Gentil',
       ubicacion: 'Praia dos Ingleses, Florianópolis',
+      descripcion: 'Departamento completo en Praia dos Ingleses, ideal para vacacionar frente a la playa. Cuenta con 2 dormitorios cómodos, 2 baños, cocina totalmente equipada, sala de estar con ventilación natural, wifi, lavandería y cochera cubierta. Disfrutá de una ubicación estratégica, a pocos minutos de la playa y del centro, con ambiente tranquilo para familias o grupos de amigos.',
+      capacidad_personas: 5,
+      precio_base_noche: 130,
+      tasa_limpieza: 300,
+      moneda: 'R$',
       foto_principal: propertyPhotoUrls[2][0]
     }
   ];
@@ -174,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
       cardLink.href = propertyUrl(property.id);
       cardLink.setAttribute('aria-label', `Ver ${property.nombre}`);
 
-      const photoUrl = propertyPhotoUrls[property.id]?.[0] || property.foto_principal;
+      const photoUrl = property.foto_principal || propertyPhotoUrls[property.id]?.[0];
       if (photoUrl) {
         const image = document.createElement('img');
         image.className = 'property-card-image';
@@ -251,7 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (response.ok && result.status === 'success') {
         propertyData = result.data;
-        if (propertyPhotoUrls[propertyId]) {
+        if ((!Array.isArray(propertyData.fotos) || propertyData.fotos.length === 0) && propertyPhotoUrls[propertyId]) {
           propertyData.fotos = propertyPhotoUrls[propertyId].map((url_imagen, index) => ({
             url_imagen,
             es_principal: index === 0
